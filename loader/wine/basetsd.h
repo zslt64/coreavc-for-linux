@@ -77,7 +77,7 @@ typedef void    *__ptr64;
 
 #else /* FIXME: defined(_WIN32) */
 
-typedef void    *__ptr32;
+//typedef void    *__ptr32;
 typedef __uint64 __ptr64;
 
 #endif

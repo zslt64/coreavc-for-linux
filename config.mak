@@ -5,10 +5,10 @@ ifndef X_COMPILE
 endif
 
 ifdef X_COMPILE
-  AR = i586-mingw32msvc-ar
-  RANLIB = i586-mingw32msvc-ranlib
-  CC = i586-mingw32msvc-gcc
-  LD = i586-mingw32msvc-ld
+  AR = i686-w64-mingw32-gcc-ar
+  RANLIB = i686-w64-mingw32-gcc-ranlib
+  CC = i686-w64-mingw32-gcc-win32
+  LD = i686-w64-mingw32-ld
   OBJDIR = ../objs-mingw
   WINE_EXT = exe
 endif
