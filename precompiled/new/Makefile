@@ -1,4 +1,4 @@
-include ../config.mak
+include ../../config.mak
 
 install::
 	mkdir -p $(PREFIX_SHARE)
