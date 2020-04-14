@@ -1,8 +1,8 @@
 Index: libmpcodecs/vd.c
 ===================================================================
---- libmpcodecs/vd.c.orig	2010-03-12 07:47:10.000000000 -0800
-+++ libmpcodecs/vd.c	2010-03-12 07:48:02.000000000 -0800
-@@ -43,6 +43,7 @@
+--- libmpcodecs/vd.c	(revision 38184)
++++ libmpcodecs/vd.c	(working copy)
+@@ -41,6 +41,7 @@
  extern const vd_functions_t mpcodecs_vd_ffmpeg;
  extern const vd_functions_t mpcodecs_vd_theora;
  extern const vd_functions_t mpcodecs_vd_dshow;
@@ -10,46 +10,47 @@ Index: libmpcodecs/vd.c
  extern const vd_functions_t mpcodecs_vd_dmo;
  extern const vd_functions_t mpcodecs_vd_vfw;
  extern const vd_functions_t mpcodecs_vd_vfwex;
-@@ -74,6 +75,7 @@
+@@ -73,6 +74,7 @@
  #ifdef CONFIG_OGGTHEORA
- 	&mpcodecs_vd_theora,
+     &mpcodecs_vd_theora,
  #endif
-+        &mpcodecs_vd_dshowserver,
++    &mpcodecs_vd_dshowserver,
  #ifdef CONFIG_WIN32DLL
-         &mpcodecs_vd_dshow,
-         &mpcodecs_vd_dmo,
+     &mpcodecs_vd_dshow,
+     &mpcodecs_vd_dmo,
 Index: Makefile
 ===================================================================
---- Makefile.orig	2010-03-12 07:47:19.000000000 -0800
-+++ Makefile	2010-03-12 07:48:02.000000000 -0800
+--- Makefile	(revision 38184)
++++ Makefile	(working copy)
 @@ -20,6 +20,7 @@
  # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  
  include config.mak
 +EXTRALIBS += -lrt
  
- .SUFFIXES:
+ ###### variable declarations #######
  
-@@ -529,6 +530,7 @@
-               stream/stream_mf.c \
-               stream/stream_null.c \
-               stream/url.c \
-+              libmpcodecs/vd_dshowserver.c \
-               $(SRCS_COMMON-yes)
+@@ -437,6 +438,7 @@
+               sub/sub_cc.c                      \
+               sub/subreader.c                   \
+               sub/vobsub.c                      \
++              libmpcodecs/vd_dshowserver.c      \
+               $(SRCS_COMMON-yes)                \
+               $(OS_FEATURE-no)
  
+@@ -828,6 +830,8 @@
  
-@@ -908,6 +910,7 @@
- libdvdnav/%:   CFLAGS := -Ilibdvdnav -D__USE_UNIX98 -D_GNU_SOURCE -DHAVE_CONFIG_H -DVERSION=\"MPlayer-custom\" $(CFLAGS)
- libdvdread4/%: CFLAGS := -Ilibdvdread4 -D__USE_UNIX98 -D_GNU_SOURCE $(CFLAGS_LIBDVDCSS_DVDREAD) $(CFLAGS)
- libfaad2/%:    CFLAGS := -Ilibfaad2 -D_GNU_SOURCE -DHAVE_CONFIG_H $(CFLAGS_FAAD_FIXED) $(CFLAGS)
-+libmpcodecs/%: CFLAGS := $(CFLAGS) -g -O0
+ gui/%: CFLAGS += -Wno-strict-prototypes
  
++libmpcodecs/%: CFLAGS += -g -O0
++
  loader/%: CFLAGS += -fno-omit-frame-pointer $(CFLAGS_NO_OMIT_LEAF_FRAME_POINTER)
  #loader/%: CFLAGS += -Ddbg_printf=__vprintf -DTRACE=__vprintf -DDETAILED_OUT
+ loader/win32%: CFLAGS += $(CFLAGS_STACKREALIGN)
 Index: libmpcodecs/vd_dshowserver.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ libmpcodecs/vd_dshowserver.c	2010-03-12 07:56:33.000000000 -0800
+--- libmpcodecs/vd_dshowserver.c	(nonexistent)
++++ libmpcodecs/vd_dshowserver.c	(working copy)
 @@ -0,0 +1,295 @@
 +/*
 + * Copyright Alan Nisota 2006 - 2010
@@ -254,7 +255,7 @@ Index: libmpcodecs/vd_dshowserver.c
 +             "--guid %08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x "
 +             "--fourc 0x%08x --bits %d --outfmt 0x%08x --pid %d --id %s "
 +             "--numpages %d --port %d %s&",
-+             sh->codec->dll, w, h,
++             codec_idx2str(sh->codec->dll_idx), w, h,
 +             (unsigned int)sh->codec->guid.f1, sh->codec->guid.f2, sh->codec->guid.f3,
 +             sh->codec->guid.f4[0], sh->codec->guid.f4[1], sh->codec->guid.f4[2], sh->codec->guid.f4[3],
 +             sh->codec->guid.f4[4], sh->codec->guid.f4[5], sh->codec->guid.f4[6], sh->codec->guid.f4[7],
@@ -348,8 +349,8 @@ Index: libmpcodecs/vd_dshowserver.c
 +}
 Index: libmpcodecs/timeout_sem.c
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ libmpcodecs/timeout_sem.c	2010-03-12 08:03:16.000000000 -0800
+--- libmpcodecs/timeout_sem.c	(nonexistent)
++++ libmpcodecs/timeout_sem.c	(working copy)
 @@ -0,0 +1,397 @@
 +#include <stdio.h>
 +#include <stdlib.h>
@@ -750,8 +751,8 @@ Index: libmpcodecs/timeout_sem.c
 +
 Index: libmpcodecs/timeout_sem.h
 ===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ libmpcodecs/timeout_sem.h	2010-03-12 07:48:02.000000000 -0800
+--- libmpcodecs/timeout_sem.h	(nonexistent)
++++ libmpcodecs/timeout_sem.h	(working copy)
 @@ -0,0 +1,10 @@
 +#define DS_SOCKET 0x01
 +#define DS_SEMAPHORE 0x02
